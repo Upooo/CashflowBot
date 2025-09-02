@@ -1,12 +1,11 @@
 import os
 from dotenv import load_dotenv
 
-load_dotenv(".env")
+load_dotenv()
 
-API_ID = int(os.getenv("API_ID", "20124949"))
-API_HASH = os.getenv("API_HASH", "ff39880b27afecc7b5063766a78591db")
-
+API_ID = int(os.getenv("API_ID"))
+API_HASH = os.getenv("API_HASH")
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
-MONGO_URL = os.getenv("MONGO_URL")
-NAMA_DB = os.getenv("NAMA_DB", "CashflowBot")
+MONGO_URI = os.getenv("MONGO_URI")
+DB_NAME = os.getenv("DB_NAME", "cashflowbot")
