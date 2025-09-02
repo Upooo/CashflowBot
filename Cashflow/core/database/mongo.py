@@ -1,8 +1,8 @@
 from pymongo import MongoClient
-from config import MONGO_URI, DB_NAME
+from config import MONGO_URL, NAMA_DB
 
-client = MongoClient(MONGO_URI)
-db = client[DB_NAME]
+client = MongoClient(MONGO_URL)
+db = client[NAMA_DB]
 
 notes_collection = db["notes"]
 wishlist_collection = db["wishlist"]
