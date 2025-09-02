@@ -21,7 +21,7 @@ def register(app):
         except:
             await cq.message.edit_text("Invalid request.")
             return
-        # safety: only user who requested can confirm
+        # only requestor can confirm
         if cq.from_user.id != uid:
             await cq.answer("Lu bukan pemilik request ini.", show_alert=True)
             return

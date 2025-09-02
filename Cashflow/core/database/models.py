@@ -65,6 +65,13 @@ def delete_wishlist_by_name(user_id: int, name: str):
     res = wishlist_collection.delete_one({"user_id": int(user_id), "name": name})
     return res.deleted_count == 1
 
+def delete_wishlist_by_id(user_id: int, wish_id: str):
+    try:
+        res = wishlist_collection.delete_one({"_id": ObjectId(wish_id), "user_id": int(user_id)})
+        return res.deleted_count == 1
+    except Exception:
+        return False
+
 def update_wishlist_saved(user_id: int, wish_id: str, amount: int):
     try:
         _id = ObjectId(wish_id)

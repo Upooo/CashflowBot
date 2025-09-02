@@ -1,10 +1,9 @@
 from pyrogram import filters
 from pyrogram.types import Message
 from Cashflow.core.database.models import (
-    add_wishlist, get_wishlist, delete_wishlist_by_name,
-    set_wishlist_status, update_wishlist_saved
+    add_wishlist, get_wishlist, delete_wishlist_by_name, delete_wishlist_by_id, update_wishlist_saved, set_wishlist_status
 )
-from Cashflow.core.helpers.utils import rupiah
+from Cashflow.utils.utils import rupiah
 
 # simple states for add/del flows
 wish_states = {}
@@ -35,7 +34,7 @@ def register(app):
         if not wishes:
             await message.reply("Belum ada wishlist buat dihapus.")
             return
-        text = "Ketik nama wishlist yang mau dihapus (nama persis):\n"
+        text = "Ketik nama wishlist yang mau dihapus (nama persis) atau ID (6 char awal):\n"
         text += "\n".join([f"- {w.get('name')} (ID:`{str(w.get('_id'))[:6]}`)" for w in wishes])
         wish_states[user_id] = {"step": "del_confirm"}
         await message.reply(text)
@@ -65,11 +64,23 @@ def register(app):
             return
 
         if state["step"] == "del_confirm":
-            name = message.text.strip()
-            ok = delete_wishlist_by_name(user_id, name)
+            txt = message.text.strip()
+            # try by id prefix
+            wishes = get_wishlist(user_id)
+            matched = None
+            for w in wishes:
+                if str(w.get("_id")).startswith(txt) or w.get("name") == txt:
+                    matched = w
+                    break
+            if not matched:
+                await message.reply("Gak ketemu wishlist. Pastikan nama persis atau ID prefix.")
+                del wish_states[user_id]
+                return
+            # delete by id
+            ok = delete_wishlist_by_id(user_id, str(matched.get("_id")))
             if ok:
-                await message.reply(f"✅ Wishlist `{name}` dihapus.")
+                await message.reply(f"✅ Wishlist `{matched.get('name')}` dihapus.")
             else:
-                await message.reply("Gagal menemukan wishlist dengan nama itu. Pastikan nama persis.")
+                await message.reply("Gagal menghapus wishlist.")
             del wish_states[user_id]
             return

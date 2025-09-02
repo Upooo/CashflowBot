@@ -1,12 +1,10 @@
 from pyrogram import filters
 from pyrogram.types import Message
 from Cashflow.core.database.models import get_notes
-from Cashflow.core.helpers.utils import format_note_doc
+from Cashflow.utils.utils import format_note_doc
 import datetime
 
 # check flow: /check -> choose day/month/year -> user inputs date string -> bot returns filtered notes
-
-# simple state
 check_states = {}
 
 def register(app):
@@ -63,7 +61,7 @@ def register(app):
             docs = list(notes_collection.find({
                 "user_id": int(user_id),
                 "created_at": {"$gte": start, "$lt": end}
-            }).sort("created_at", -1).limit(200))
+            }).sort("created_at", -1).limit(500))
 
             if not docs:
                 await message.reply("Tidak ada transaksi pada rentang itu.")

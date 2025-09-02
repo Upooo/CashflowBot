@@ -1,6 +1,6 @@
 from pyrogram import filters
 from pyrogram.types import Message
-from Cashflow.core.keyboards import main_menu
+from Cashflow.utils.keyboards import main_menu
 
 def register(app):
     @app.on_message(filters.command("start"))

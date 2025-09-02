@@ -1,7 +1,7 @@
 from pyrogram import filters
 from pyrogram.types import Message
 from Cashflow.core.database.models import get_wishlist, add_saving_record, update_wishlist_saved
-from Cashflow.core.helpers.utils import rupiah
+from Cashflow.utils.utils import rupiah
 
 # saving_states[user_id] = {"step": "choose" or "amount", "tujuan": "general" or wishlist_id}
 saving_states = {}
@@ -34,11 +34,11 @@ def register(app):
                 state["step"] = "amount"
                 await message.reply("Masukkan jumlah yang ingin ditabung:")
                 return
-            # try match wishlist id prefix
+            # try match wishlist id prefix or exact name
             wishes = get_wishlist(user_id)
             matched = None
             for w in wishes:
-                if str(w.get("_id")).startswith(txt):
+                if str(w.get("_id")).startswith(txt) or w.get("name") == txt:
                     matched = w
                     break
             if matched:
@@ -55,7 +55,6 @@ def register(app):
                 tujuan = state["tujuan"]
                 add_saving_record(user_id, tujuan, amount)
                 if tujuan != "general":
-                    # update wishlist saved
                     update_wishlist_saved(user_id, tujuan, amount)
                 await message.reply(f"✅ Berhasil menabung {rupiah(amount)} ke `{tujuan if tujuan=='general' else tujuan[:6]}`")
                 del saving_states[user_id]

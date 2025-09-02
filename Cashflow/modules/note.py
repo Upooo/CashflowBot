@@ -1,7 +1,7 @@
 from pyrogram import filters
 from pyrogram.types import Message
-from Cashflow.core.keyboards import note_menu_kb, cancel_kb
-from Cashflow.core.helpers.utils import safe_int, rupiah
+from Cashflow.utils.keyboards import note_menu_kb, cancel_kb
+from Cashflow.utils.utils import safe_int, rupiah
 from Cashflow.core.database.models import add_note
 from datetime import datetime
 
@@ -9,12 +9,12 @@ from datetime import datetime
 states = {}
 
 def register(app):
-    # open menu via command
+    # /note command -> opens menu
     @app.on_message(filters.command("note"))
     async def note_cmd(client, message: Message):
         await message.reply("📓 Mau catat pemasukan atau pengeluaran?", reply_markup=note_menu_kb())
 
-    # callback start (clicked from main menu)
+    # callback for starting the note flow
     @app.on_callback_query(filters.regex("^(note_income|note_expense|cancel_action)$"))
     async def note_cb(client, cq):
         await cq.answer()
@@ -31,7 +31,7 @@ def register(app):
         states[user_id] = {"type": tipe, "step": "amount"}
         await cq.message.edit_text(f"✍️ Masukkan jumlah untuk *{tipe}* (contoh: 50000)", reply_markup=cancel_kb())
 
-    # message handler to collect amount and desc
+    # message handler to collect amount and description
     @app.on_message(filters.text & ~filters.regex(r"^/"))
     async def note_input(client, message: Message):
         user_id = message.from_user.id
